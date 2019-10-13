@@ -1,4 +1,4 @@
 # MeetNotify
 
 # Installation
-pip instll -r requrement.txt
+pip install -r requrement.txt
