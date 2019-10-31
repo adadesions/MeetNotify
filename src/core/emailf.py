@@ -3,6 +3,30 @@ import quopri
 import imaplib
 import email
 import re
+import base64
+
+
+def gmailContent(raw_text):
+    h2t = html2text.HTML2Text()
+    catching = False
+    raw_body = ''
+
+    for i, line in enumerate(raw_text):
+        if 'base64' in line:
+            catching = True
+            continue
+
+        if catching:
+            try:
+                raw_body += base64.b64decode(line).decode('utf-8')
+            except:
+                continue
+
+    decoded_text = h2t.handle(raw_body).split('\n')
+    complete_text = '\n'.join([t for t in decoded_text if len(t) > 0])
+
+    return complete_text
+
 
 def getEmailContent(raw_mail):
     match_lines = []
@@ -15,13 +39,13 @@ def getEmailContent(raw_mail):
         end_line = match_lines[1]
         email_body = raw_mail[start_line:end_line]
     except IndexError:
-        print(raw_mail)
-        print('Body not found')
-        return ''
+        body_text = gmailContent(raw_mail)
+        return body_text
 
     h2t = html2text.HTML2Text()
     raw_text = h2t.handle(' '.join(email_body))
     decoded_line = ''
+
     for line in raw_text.split('\n'):
         decode_text = quopri.decodestring(line).decode('iso-8859-11')
 
@@ -47,8 +71,8 @@ def move_mail(email, password, to_folder):
     imap.select("inbox", readonly=False) # connect to inbox.
     result, data = imap.search(None, "ALL")
     
-    ids = data[0] # data is a list.
-    id_list = ids.split() # ids is a space separated string
+    ids = data[0] # data is a list. (string)
+    id_list = ids.split() # ids is a space separated string (list) 1 2 3 => ['1', '2', 3']
     try:
         latest_email_id = id_list[-1] # get the latest
     except IndexError:

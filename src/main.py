@@ -38,7 +38,7 @@ message = Parser().parsestr(text)
 full_text = {
     'from': message['From'],
     'subject': message['Subject'],
-    'data': message['Date'],
+    'date': message['Date'],
     'body': bodyContent
 }
 
