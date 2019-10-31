@@ -14,7 +14,6 @@ PASSWORD = "#tot#8899"
 # connect to server
 logging.debug('connecting to ' + SERVER)
 server = poplib.POP3_SSL(SERVER)
-#server = poplib.POP3(SERVER)
 
 # log in
 logging.debug('log in')
@@ -44,7 +43,8 @@ full_text = {
 }
 
 # Moving Email
-emailf.move_mail(USER, PASSWORD, 'Meeting')
+is_new = emailf.move_mail(USER, PASSWORD, 'Meeting')
 
-# Output message
-print(full_text)
+if is_new:
+    # Output message
+    print(full_text)
