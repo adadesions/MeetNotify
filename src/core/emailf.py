@@ -92,3 +92,11 @@ def move_mail(email, password, to_folder):
     imap.close()
 
     return True
+
+
+def subjectHandler(subjectText):
+    if 'utf-8' in subjectText:
+        temp_subject = subjectText.split('?')[-2]
+        return base64.b64decode(temp_subject).decode('utf-8')
+    else:
+        return subjectText

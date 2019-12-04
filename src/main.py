@@ -1,12 +1,14 @@
 import poplib
 import string, random
 import io
-from email.parser import Parser
 import email
 import logging
 import core.emailf as emailf
 import quopri
 import base64
+
+from email.parser import Parser
+
 
 SERVER = "pop.gmail.com"
 USER  = "malunthakesr@gmail.com"
@@ -34,17 +36,17 @@ text = '\n'.join([t.decode('utf-8') for t in text])
 raw_mail = text.split('\n')
 bodyContent = emailf.getEmailContent(raw_mail)
 message = Parser().parsestr(text)
-subject = message['Subject']
-
-if 'utf-8' in subject:
-    temp_subject = subject.split('?')[-2]
-    subject = base64.b64decode(temp_subject).decode('utf-8')
-
+subject = emailf.subjectHandler(message['Subject'])
+time = message['Date'].split(' ')[-2]
+(hh, mm, ss) = time.split(':')
+hh = (int(hh)+7)%12
+time = ':'.join([str(hh), mm, ss])
 
 full_text = {
     'from': message['From'],
     'subject': subject,
     'date': message['Date'],
+    'thai-time': time, 
     'body': bodyContent
 }
 print(full_text)
