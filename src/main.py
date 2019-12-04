@@ -37,19 +37,15 @@ raw_mail = text.split('\n')
 bodyContent = emailf.getEmailContent(raw_mail)
 message = Parser().parsestr(text)
 subject = emailf.subjectHandler(message['Subject'])
-time = message['Date'].split(' ')[-2]
-(hh, mm, ss) = time.split(':')
-hh = (int(hh)+7)%12
-time = ':'.join([str(hh), mm, ss])
+thaiTime = emailf.convert2GTM7(message['Date'])
 
 full_text = {
     'from': message['From'],
     'subject': subject,
     'date': message['Date'],
-    'thai-time': time, 
+    'thai-time': thaiTime, 
     'body': bodyContent
 }
-print(full_text)
 
 # Moving Email
 is_new = emailf.move_mail(USER, PASSWORD, 'Meeting')

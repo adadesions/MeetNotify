@@ -100,3 +100,17 @@ def subjectHandler(subjectText):
         return base64.b64decode(temp_subject).decode('utf-8')
     else:
         return subjectText
+
+
+def convert2GTM7(strTime):
+    time = strTime.split(' ')[-2]
+    (hh, mm, ss) = time.split(':')
+    hh = (int(hh)+7)%12
+    strHH = str(hh)
+
+    if len(strHH) == 1:
+        strHH = '0'+strHH
+
+    gtm7Time = ':'.join([strHH, mm, ss])
+
+    return gtm7Time
