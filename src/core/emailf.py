@@ -7,25 +7,24 @@ import base64
 
 
 def gmailContent(raw_text):
-    h2t = html2text.HTML2Text()
     catching = False
     raw_body = ''
 
     for i, line in enumerate(raw_text):
-        if 'base64' in line:
+        if any(word in line for word in ['text/html', 'base64']):
             catching = True
             continue
+        elif 'multipart/related' in line:
+            break
 
         if catching:
-            try:
-                raw_body += base64.b64decode(line).decode('utf-8')
-            except:
-                continue
+            isKeep = any(word in line for word in ['MIME', '-==='])
+            if not isKeep:
+                raw_body += line
 
-    decoded_text = h2t.handle(raw_body).split('\n')
-    complete_text = '\n'.join([t for t in decoded_text if len(t) > 0])
+    plain_text = base64.b64decode(raw_body).decode('utf-8')
 
-    return complete_text
+    return plain_text
 
 
 def getEmailContent(raw_mail):
@@ -58,7 +57,7 @@ def getEmailContent(raw_mail):
 
 
 def parse_uid(data):
-    pattern_uid = re.compile('\d+ \(UID (?P<uid>\d+)\)')
+    pattern_uid = re.compile(r'\d+ \(UID (?P<uid>\d+)\)')
     match = pattern_uid.match(data)
     return match.group('uid')
 
