@@ -87,7 +87,9 @@ def move_mail(email, password, to_folder):
     if result[0] == "OK":
         print('Successfully moving email')
     else:
-        print('ERROR: Can not move email')
+        print('IMAP: Folder not found, creating {} folder'.format(to_folder))
+        imap.create(to_folder)
+        move_mail(email, password, to_folder)
     
     imap.close()
 

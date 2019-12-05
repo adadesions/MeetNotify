@@ -75,7 +75,7 @@ def main():
         # End Line Notification
 
         # Moving Email
-        is_new = emailf.move_mail(USER, PASSWORD, 'Meeting')
+        is_new = emailf.move_mail(USER, PASSWORD, 'MeetingXYZ')
 
         if is_new:
             # Output message
