@@ -50,6 +50,7 @@ def main():
     isBodyMatch = any(f in bodyContent for f in meetingFilter)
     # End Filtering
 
+
     if isSubjectMatch or isBodyMatch:
         full_text = {
             'from': message['From'],

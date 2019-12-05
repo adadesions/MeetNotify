@@ -103,7 +103,7 @@ def move_mail(email, password, to_folder):
 
 
 def subjectHandler(subjectText):
-    if 'utf-8' in subjectText:
+    if any(utf in subjectText for utf in ['UTF-8', 'utf-8']):
         temp_subject = subjectText.split('?')[-2]
         return base64.b64decode(temp_subject).decode('utf-8')
     else:
@@ -111,7 +111,13 @@ def subjectHandler(subjectText):
 
 
 def convert2GTM7(strTime):
-    time = strTime.split(' ')[-2]
+    theDateTime = strTime.split(' ')
+    time = theDateTime[-2]
+    timezone = theDateTime[-1]
+
+    if '7' in timezone:
+        return time
+
     (hh, mm, ss) = time.split(':')
     hh = (int(hh)+7)%12
     strHH = str(hh)
