@@ -6,12 +6,16 @@ import logging
 import core.emailf as emailf
 import quopri
 import base64
+import requests
 
 from email.parser import Parser
 
 SERVER = "pop.gmail.com"
 USER  = "malunthakesr@gmail.com"
 PASSWORD = "#tot#8899"
+URL = 'https://notify-api.line.me/api/notify'  # เป็น url ที่เราจะ request
+TOKEN = 'ufNNz3vfTEZxwiXImGbDjGKAoPwEaFhS9ApJSVELS6m'  # token เป็นตัวที่ gen ออกมาได้จากการขอ token ในหน้าเว็บของ line
+HEADERS = {'content-type': 'application/x-www-form-urlencoded', 'Authorization': 'Bearer '+TOKEN}  # เป็นการกำหนด header
 
 
 def main():
@@ -54,6 +58,21 @@ def main():
             'thai-time': thaiTime, 
             'body': bodyContent
         }
+
+        # Line Notification
+        requests.post(
+            URL,
+            headers=HEADERS,
+            data={
+                'message': """Subject: {0}\nFrom: {1}\nDateTime: {2}\nBangkokTime: {3}\n============\n{4}"""
+                    .format(full_text['subject'],
+                            full_text['from'],
+                            full_text['date'],
+                            full_text['thai-time'],
+                            full_text['body'])
+            }
+        )
+        # End Line Notification
 
         # Moving Email
         is_new = emailf.move_mail(USER, PASSWORD, 'Meeting')
