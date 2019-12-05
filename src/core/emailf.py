@@ -22,7 +22,13 @@ def gmailContent(raw_text):
             if not isKeep:
                 raw_body += line
 
-    plain_text = base64.b64decode(raw_body).decode('utf-8')
+    try:
+        plain_text = base64.b64decode(raw_body).decode('utf-8')
+    except:
+        h2t = html2text.HTML2Text()
+        decoded_text = h2t.handle(raw_body).split('\n')
+        decoded_text = [ele for ele in decoded_text if '\\--' not in ele]
+        plain_text = '\n'.join([t for t in decoded_text if len(t) > 0])
 
     return plain_text
 
@@ -37,7 +43,7 @@ def getEmailContent(raw_mail):
         start_line = match_lines[0] + 1
         end_line = match_lines[1]
         email_body = raw_mail[start_line:end_line]
-    except IndexError:
+    except:
         body_text = gmailContent(raw_mail)
         return body_text
 

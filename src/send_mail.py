@@ -36,13 +36,14 @@ data = {
 }
 
 
-def single_mail(subject, contents):
+def single_mail(subject, contents, attachment=None):
     yag = yagmail.SMTP(sender_email, passwd)
 
     yag.send(
         to=receiver_email,
         subject=subject,
         contents=contents,
+        attachments=attachment
     )
 
     print('Status: Completely Sent to {}'.format(receiver_email))

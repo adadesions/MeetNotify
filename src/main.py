@@ -44,8 +44,8 @@ def main():
     subject = emailf.subjectHandler(message['Subject'])
     thaiTime = emailf.convert2GTM7(message['Date'])
 
-    # Filtering 
-    meetingFilter = ['Urgent', 'meeting', 'join', 'ประชุม', 'เรียกพบ', 'เข้าร่วม']
+    # Filtering
+    meetingFilter = ['Urgent', 'meeting', 'Meeting', 'join', 'ประชุม', 'เรียกพบ', 'เข้าร่วม']
     isSubjectMatch = any(f in subject for f in meetingFilter)
     isBodyMatch = any(f in bodyContent for f in meetingFilter)
     # End Filtering
