@@ -59,27 +59,27 @@ def main():
             'body': bodyContent
         }
 
-        # Line Notification
-        requests.post(
-            URL,
-            headers=HEADERS,
-            data={
-                'message': """Subject: {0}\nFrom: {1}\nDateTime: {2}\nBangkokTime: {3}\n============\n{4}"""
-                    .format(full_text['subject'],
-                            full_text['from'],
-                            full_text['date'],
-                            full_text['thai-time'],
-                            full_text['body'])
-            }
-        )
-        # End Line Notification
 
         # Moving Email
-        is_new = emailf.move_mail(USER, PASSWORD, 'MeetingXYZ')
+        is_new = emailf.move_mail(USER, PASSWORD, 'Meeting')
 
         if is_new:
             # Output message
             print(full_text)
+            # Line Notification
+            requests.post(
+                URL,
+                headers=HEADERS,
+                data={
+                    'message': """Subject: {0}\nFrom: {1}\nDateTime: {2}\nBangkokTime: {3}\n============\n{4}"""
+                        .format(full_text['subject'],
+                                full_text['from'],
+                                full_text['date'],
+                                full_text['thai-time'],
+                                full_text['body'])
+                }
+            )
+            # End Line Notification
     else:
         print('No match emails or No new mails in mailbox')
 
