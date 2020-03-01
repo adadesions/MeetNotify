@@ -65,9 +65,9 @@ def main():
     # download the multi message and convert to human readable
     # limit only last 5 mails
     items.reverse()
-    limit10 = items[:5]
+    limit5 = items[:5]
 
-    for item in limit10:
+    for item in limit5:
         # # convert list to Message object
         msg = convert2msg(item, server)
 
