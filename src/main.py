@@ -1,4 +1,5 @@
 import poplib
+import imaplib
 import string, random
 import io
 import email
@@ -8,8 +9,8 @@ import quopri
 import base64
 import requests
 import json
-
 from email.parser import Parser
+
 
 SERVER = "pop.gmail.com"
 USER  = "malunthakesr@gmail.com"
@@ -53,6 +54,11 @@ def main():
     server.user(USER)
     server.pass_(PASSWORD)
 
+    # IMAP4
+    imap = imaplib.IMAP4_SSL('imap.gmail.com')
+    imap.login(USER, PASSWORD)
+    imap.select("inbox", readonly=False)
+
     # list items on server
     resp, items, octets = server.list()
 
@@ -91,8 +97,27 @@ def main():
                 'body': msg['bodyContent']
             }
 
-            # Moving Email
-            is_new = emailf.move_mail(USER, PASSWORD, 'Meeting')
+            keyword = ''.join(['(SUBJECT ', '"', full_text['subject'], '")'])
+            keyword = keyword.encode('utf-8')
+            print("keyword:", keyword)
+
+            is_new = False
+
+            try:
+                result_search, data_search = imap.search(None, keyword)
+                print(result_search, data_search, len(data_search[0]))
+                if len(data_search[0]) > 0:
+                    ids = data_search[0].split()
+                    print('ids:', ids)
+                    for id in ids:
+                        res, data = imap.fetch(id, "(UID)") # fetch the email body (RFC822) for the given ID
+                        msg_uid = emailf.parse_uid(data[0].decode('utf-8'))
+                        result = imap.uid('MOVE', msg_uid, 'Meeting')
+                    is_new = True
+            except:
+                print("Exception IMAP4: Can't read subject")
+                # raise
+
 
             if is_new:
                 # Output message
@@ -110,6 +135,7 @@ def main():
                                     full_text['body'])
                     }
                 )
+                print('Sent Notification')
                 # End Line Notification
         else:
             print('No match emails or No new mails in mailbox')
