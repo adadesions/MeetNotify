@@ -100,7 +100,6 @@ def main():
 
 
             is_new = False
-
             try:
                 imap.literal = full_text['subject'].encode('utf-8')
                 result_search, data_search = imap.search('utf-8', 'SUBJECT')
@@ -111,21 +110,34 @@ def main():
                     for id in ids:
                         res, data = imap.fetch(id, "(UID)") # fetch the email body (RFC822) for the given ID
                         msg_uid = emailf.parse_uid(data[0].decode('utf-8'))
+
+                        # Get File attachment name
+                        file_attachment = ''
+                        res, data = imap.fetch(id, "(RFC822)")
+                        node1 = data[0][1].decode('utf-8').split('filename=')
+                        if len(node1) > 1:
+                            file_attachment = node1[1].split('\n')[0]
+                        # End get file attachment name
+
+                        # Move mail
                         result = imap.uid('MOVE', msg_uid, 'Meeting')
-                        if result[0] == 'OK':
-                            requests.post(
-                                URL,
-                                headers=HEADERS,
-                                data={
-                                    'message': """Subject: {0}\nFrom: {1}\nDateTime: {2}\nBangkokTime: {3}\n============\n{4}"""
-                                        .format(full_text['subject'],
-                                                full_text['from'],
-                                                full_text['date'],
-                                                full_text['thai-time'],
-                                                full_text['body'])
-                                }
-                            )
-                            print('Sent Notification')
+                        
+                        # Line Notification
+                        requests.post(
+                            URL,
+                            headers=HEADERS,
+                            data={
+                                'message': """Subject: {0}\nFrom: {1}\nDateTime: {2}\nBangkokTime: {3}\n============\n{4}\n============\n file attachment: {5}"""
+                                    .format(full_text['subject'],
+                                            full_text['from'],
+                                            full_text['date'],
+                                            full_text['thai-time'],
+                                            full_text['body'],
+                                            file_attachment),
+
+                            }
+                        )
+                        print('Sent Notification')
             except:
                 print("Exception IMAP4: Can't read subject")
                 # raise
@@ -134,9 +146,6 @@ def main():
             if is_new:
                 # Output message
                 print(full_text)
-                # Line Notification
-                
-                # End Line Notification
         else:
             print('No match emails or No new mails in mailbox')
 
