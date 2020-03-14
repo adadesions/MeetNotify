@@ -98,14 +98,12 @@ def main():
                 'body': msg['bodyContent']
             }
 
-            keyword = ''.join(['(SUBJECT ', '"', full_text['subject'], '")'])
-            keyword = keyword.encode('utf-8')
-            print("keyword:", keyword)
 
             is_new = False
 
             try:
-                result_search, data_search = imap.search(None, keyword)
+                imap.literal = full_text['subject'].encode('utf-8')
+                result_search, data_search = imap.search('utf-8', 'SUBJECT')
                 print(result_search, data_search, len(data_search[0]))
                 if len(data_search[0]) > 0:
                     ids = data_search[0].split()
