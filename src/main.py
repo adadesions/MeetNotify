@@ -77,13 +77,14 @@ def main():
         # # convert list to Message object
         msg = convert2msg(item, server)
 
+        
         # Filtering
-        print(all_words)
-    
         isSubjectMatch = any(f in msg['subject'] for f in all_words)
         isBodyMatch = any(f in msg['bodyContent'] for f in all_words)
         # End Filtering
 
+        # Debuging
+        print(all_words)
         print(isSubjectMatch)
         print(isBodyMatch)
 
@@ -113,7 +114,20 @@ def main():
                         res, data = imap.fetch(id, "(UID)") # fetch the email body (RFC822) for the given ID
                         msg_uid = emailf.parse_uid(data[0].decode('utf-8'))
                         result = imap.uid('MOVE', msg_uid, 'Meeting')
-                    is_new = True
+                        if result[0] == 'OK':
+                            requests.post(
+                                URL,
+                                headers=HEADERS,
+                                data={
+                                    'message': """Subject: {0}\nFrom: {1}\nDateTime: {2}\nBangkokTime: {3}\n============\n{4}"""
+                                        .format(full_text['subject'],
+                                                full_text['from'],
+                                                full_text['date'],
+                                                full_text['thai-time'],
+                                                full_text['body'])
+                                }
+                            )
+                            print('Sent Notification')
             except:
                 print("Exception IMAP4: Can't read subject")
                 # raise
@@ -123,19 +137,7 @@ def main():
                 # Output message
                 print(full_text)
                 # Line Notification
-                requests.post(
-                    URL,
-                    headers=HEADERS,
-                    data={
-                        'message': """Subject: {0}\nFrom: {1}\nDateTime: {2}\nBangkokTime: {3}\n============\n{4}"""
-                            .format(full_text['subject'],
-                                    full_text['from'],
-                                    full_text['date'],
-                                    full_text['thai-time'],
-                                    full_text['body'])
-                    }
-                )
-                print('Sent Notification')
+                
                 # End Line Notification
         else:
             print('No match emails or No new mails in mailbox')

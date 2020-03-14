@@ -68,40 +68,6 @@ def parse_uid(data):
     return match.group('uid')
 
 
-def move_mail(email, password, to_folder):
-    imap = imaplib.IMAP4_SSL('imap.gmail.com')
-    imap.login(email, password)
-    imap.list()
-    # Out: list of "folders" aka labels in gmail.
-    imap.select("inbox", readonly=False) # connect to inbox.
-    result, data = imap.search(None, "ALL")
-    
-    ids = data[0] # data is a list. (string)
-    id_list = ids.split() # ids is a space separated string (list) 1 2 3 => ['1', '2', 3']
-    try:
-        latest_email_id = id_list[-1] # get the latest
-    except IndexError:
-        print('No new mail was found!')
-        imap.close()
-        return False
-
-    res, data = imap.fetch(latest_email_id, "(UID)") # fetch the email body (RFC822) for the given ID
-    msg_uid = parse_uid(data[0].decode('utf-8'))
-
-    result = imap.uid('MOVE', msg_uid, to_folder)
-
-    if result[0] == "OK":
-        print('Successfully moving email')
-    else:
-        print('IMAP: Folder not found, creating {} folder'.format(to_folder))
-        imap.create(to_folder)
-        move_mail(email, password, to_folder)
-    
-    imap.close()
-
-    return True
-
-
 def subjectHandler(subjectText):
     print(subjectText)
 

@@ -54,6 +54,6 @@ if __name__ == '__main__':
     eng_mail = data['eng']
     out_mail = data['out']
 
-    # single_mail(thai_mail['subject'], thai_mail['body'])
+    single_mail(thai_mail['subject'], thai_mail['body'])
     single_mail(eng_mail['subject'], eng_mail['body'])
-    # single_mail(out_mail['subject'], out_mail['body'])
+    single_mail(out_mail['subject'], out_mail['body'])
