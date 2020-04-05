@@ -114,7 +114,7 @@ def main():
                         # Get File attachment name
                         file_attachment = ''
                         res, data = imap.fetch(id, "(RFC822)")
-                        node1 = data[0][1].decode('utf-8').split('filename=')
+                        node1 = data[0][1].decode('utf-8').split('filename=') # Got a list
                         if len(node1) > 1:
                             file_attachment = node1[1].split('\n')[0]
                         # End get file attachment name
@@ -123,21 +123,21 @@ def main():
                         result = imap.uid('MOVE', msg_uid, 'Meeting')
                         
                         # Line Notification
-                        requests.post(
-                            URL,
-                            headers=HEADERS,
-                            data={
-                                'message': """Subject: {0}\nFrom: {1}\nDateTime: {2}\nBangkokTime: {3}\n============\n{4}\n============\n file attachment: {5}"""
-                                    .format(full_text['subject'],
-                                            full_text['from'],
-                                            full_text['date'],
-                                            full_text['thai-time'],
-                                            full_text['body'],
-                                            file_attachment),
+                        # requests.post(
+                        #     URL,
+                        #     headers=HEADERS,
+                        #     data={
+                        #         'message': """Subject: {0}\nFrom: {1}\nDateTime: {2}\nBangkokTime: {3}\n============\n{4}\n============\n file attachment: {5}"""
+                        #             .format(full_text['subject'],
+                        #                     full_text['from'],
+                        #                     full_text['date'],
+                        #                     full_text['thai-time'],
+                        #                     full_text['body'],
+                        #                     file_attachment),
 
-                            }
-                        )
-                        print('Sent Notification')
+                        #     }
+                        # )
+                        # print('Sent Notification')
             except:
                 print("Exception IMAP4: Can't read subject")
                 # raise
