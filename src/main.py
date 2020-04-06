@@ -9,6 +9,7 @@ import quopri
 import base64
 import requests
 import json
+import deepcut
 from email.parser import Parser
 
 
@@ -45,6 +46,17 @@ def convert2msg(obj, server):
     return msg
 
 
+def upgraded_filter(message, counters):
+    sample = deepcut.tokenize(message)
+    for word in sample:
+        for test_word in counters.keys():
+            if word == test_word:
+                counters[test_word] += 1
+    result = any(filter(lambda x: x >= 2, counters.values()))
+
+    return result
+
+
 def main():
     # connect to server
     logging.debug('connecting to ' + SERVER)
@@ -76,11 +88,12 @@ def main():
     for item in limit5:
         # # convert list to Message object
         msg = convert2msg(item, server)
-
+        counters = { key:0 for key in all_words}
         
         # Filtering
-        isSubjectMatch = any(f in msg['subject'] for f in all_words)
-        isBodyMatch = any(f in msg['bodyContent'] for f in all_words)
+        print(msg['subject'])
+        isSubjectMatch = upgraded_filter(msg['subject'], counters)
+        isBodyMatch = upgraded_filter(msg['bodyContent'], counters)
         # End Filtering
 
         # Debuging
@@ -123,21 +136,21 @@ def main():
                         result = imap.uid('MOVE', msg_uid, 'Meeting')
                         
                         # Line Notification
-                        # requests.post(
-                        #     URL,
-                        #     headers=HEADERS,
-                        #     data={
-                        #         'message': """Subject: {0}\nFrom: {1}\nDateTime: {2}\nBangkokTime: {3}\n============\n{4}\n============\n file attachment: {5}"""
-                        #             .format(full_text['subject'],
-                        #                     full_text['from'],
-                        #                     full_text['date'],
-                        #                     full_text['thai-time'],
-                        #                     full_text['body'],
-                        #                     file_attachment),
+                        requests.post(
+                            URL,
+                            headers=HEADERS,
+                            data={
+                                'message': """Subject: {0}\nFrom: {1}\nDateTime: {2}\nBangkokTime: {3}\n============\n{4}\n============\n file attachment: {5}"""
+                                    .format(full_text['subject'],
+                                            full_text['from'],
+                                            full_text['date'],
+                                            full_text['thai-time'],
+                                            full_text['body'],
+                                            file_attachment),
 
-                        #     }
-                        # )
-                        # print('Sent Notification')
+                            }
+                        )
+                        print('Sent Notification')
             except:
                 print("Exception IMAP4: Can't read subject")
                 # raise

@@ -69,8 +69,6 @@ def parse_uid(data):
 
 
 def subjectHandler(subjectText):
-    print(subjectText)
-
     if any(utf in subjectText for utf in ['UTF-8', 'utf-8']):
         result = []
         raw_subject = subjectText.split('?')
